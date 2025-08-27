@@ -62,8 +62,41 @@ Primitives enable you to perform fundamental data operations.
 3. Print them all to the console with `console.log()`.
 4. Check your work, as you go, by opening the browser console with the **Inspect Element** tool.
 
-```javascript
-// Write your code in here
+```js
+/**
+ * Practice with basic data types
+ * Name: Ademola Adepoju
+ * Date: 2025-08-27
+ */
+
+// string
+let food = "Jollof Rice"
+
+// number
+let plates = 3
+
+// boolean (true/false)
+let hungry = true
+
+// null (empty value)
+let dessert = null
+
+// undefined (no value yet)
+let drink
+
+// object (grouping related info)
+let meal = {
+  main: "Rice",
+  side: "Plantain"
+}
+
+// print them out so we can check
+console.log(food)
+console.log(plates)
+console.log(hungry)
+console.log(dessert)
+console.log(drink)
+console.log(meal)
 ```
 
 ## Submission
