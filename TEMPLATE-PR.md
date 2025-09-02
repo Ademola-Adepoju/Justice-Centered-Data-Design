@@ -4,14 +4,5 @@
 
 Reflect on 2-3 triumphs in the list format below.
 
-1. **NameofTriumph**: Describe triumph and what you learned.
-2. **NameofTriumph**: Describe triumph and what you learned.
-3. **NameofTriumph**: Describe triumph and what you learned.
-
-## Questions / Difficulties
-
-Reflect on 2-3 questions about difficulties or concerns in the list format below. Think of questions that you would like your peers to address.
-
-1. **Question_Diff**: Describe difficulty, any lingering questions and concerns, and what you learned by even writing about it so far.
-2. **Question_Diff**: Describe difficulty, any lingering questions and concerns, and what you learned by even writing about it so far.
-3. **Question_Diff**: Describe difficulty, any lingering questions and concerns, and what you learned by even writing about it so far.
+1. **Template Typo**: The starter code used personAage instead of person3Age. I copied it, so my else if (person3Age === 30) was checking a variable that didn’t exist. Renaming to person3Age fixed it immediately—the Console showed “Person is exactly 30 years old.”
+2. **Redeclarations across js blocks**: I had declared the same names (e.g., person1Age, childrenTotal) in multiple executable blocks. In Observable, all js blocks share the same module scope, so top-level names can only be declared once. I moved all person/children declarations into a single starter block and only used them later.
