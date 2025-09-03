@@ -411,6 +411,16 @@ for () {
 lessProfessions
 ```
 
+```js
+let lessProfessions = []
+for (const i in professions) {
+  if (Number(i) !== 1) {
+    lessProfessions.push(professions[i])
+  }
+}
+console.log(lessProfessions)     
+```
+
 ### E2. Push/add a new profession to an array
 
 **Goal**: Add a new profession as a String, `"spinster"`, to your `professions` list, then log it to the web console.
@@ -427,29 +437,47 @@ lessProfessions
 // Convert me to output `professions`
 professions
 ```
+```js
+professions.push("spinster")
+console.log(professions)
+```
 
 ### E3. Loop through an array and log to the console
 
 **Goal**: Make a `for` loop that considers each item in the `professions` array and logs "Person's profession is ___", which "___" should be the profession from the array.
 
-```javascript
-// Convert and code here
+```js
+for (const job of professions) {               
+  console.log("Person's profession is", job)
+}
 ```
 
 ### E4. More conditional pushing with `for...of`
 
 **Goal**: Create a new array and populate, i.e., push all items from the `childStatus` array, except for any empty Strings. Use a `for...of` loop to do so.
 
-```javascript
-// Your code here
+```js
+let hasChildStatus = []
+for (const status of childStatus) {
+  if (status.length > 0) {           
+    hasChildStatus.push(status)
+  }
+}
+console.log(hasChildStatus)
 ```
 
 ### E5. Conditional logging
 
 **Goal**: Make a `for` loop that considers each item in the `childStatus` list. Log `"Person has child"` ***if*** the person has a child ***and*** `"Person does not have child"` ***if not***. Use `.length` in your conditional statement to enact this logging.
 
-```javascript
-// Your code here
+```js
+for (const status of childStatus) {
+  if (status.length > 0) {
+    console.log("Person has child")
+  } else {
+    console.log("Person does not have child")
+  }
+}
 ```
 
 Make sure you check to see if the correct language has been logged to the web console.
@@ -460,12 +488,13 @@ Make sure you check to see if the correct language has been logged to the web co
 
 For your reference, here's the original declaration and instantiation of `sex`: `let sex = ["f", "m", "f", "m", "i"]`.
 
-```javascript
-// Convert and code here
+```js
+if (!sex.includes("unknown")) {
+  sex.push("unknown")
+}
 ```
 
-```javascript
-// Convert and output here
+```js
 sex
 ```
 
@@ -473,8 +502,13 @@ sex
 
 **Goal**: Make a `for` loop that considers each item in the `sex` list. Log "Person is male" ***if*** the person is `"m"`, "Person is female" ***if*** the person is `"f"`, "Person is intersex" ***if*** the person is `"i"`, and "Person's sex is not known" ***if*** `"unknown"`.
 
-```javascript
-// Your code here
+```js
+for (const s of sex) {
+  if (s === "m") console.log("Person is male")
+  else if (s === "f") console.log("Person is female")
+  else if (s === "i") console.log("Person is intersex")
+  else if (s === "unknown") console.log("Person's sex is not known")
+}
 ```
 
 Make sure to check if the items are logged correctly.
@@ -485,17 +519,19 @@ Make sure to check if the items are logged correctly.
 
 Since this is your first big use of `.map()`, I'll give you the skeleton of the expression:
 
-```javascript
-// Skeleton of .map()
+```js
 let sexFullTerm = sex.map(
   (sexItem) => {
-    // Enter your code in here,
-    // which will include conditional statements.
-    // Also, be sure to use `return` statements
-    // where appropriate!
+    if (sexItem === "f") return "female"
+    if (sexItem === "m") return "male"
+    if (sexItem === "i") return "intersex"
+    return "unknown" 
   }
 )
+
+console.log(sexFullTerm)
 ```
+
 
 ## Submission
 
