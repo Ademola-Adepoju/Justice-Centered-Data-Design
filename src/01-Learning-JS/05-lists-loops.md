@@ -410,11 +410,11 @@ for () {
 
 ```js
 let lessProfessions = []
-for (const i in professions) {
-  if (Number(i) !== 1) {
-    lessProfessions.push(professions[i])
+for (let i = 0; i < professions.length; i++) {
+  if (i !== 1) {
+    lessProfessions.push(professions[i])  
   }
-}     
+}  
 ```
 
 ```js
@@ -434,10 +434,12 @@ lessProfessions
   Interactive output of the array of <code>lessProfessions</code>
 </p>
 
+
 ```js
 professions.push("spinster")
 console.log(professions)
 ```
+
 ```js
 professions
 ```
