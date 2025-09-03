@@ -406,10 +406,7 @@ for () {
   Interactive output of the array of <code>lessProfessions</code>
 </p>
 
-```javascript
-// Convert me to output `lessProfessions`
-lessProfessions
-```
+
 
 ```js
 let lessProfessions = []
@@ -417,8 +414,12 @@ for (const i in professions) {
   if (Number(i) !== 1) {
     lessProfessions.push(professions[i])
   }
-}
-console.log(lessProfessions)     
+}     
+```
+
+```js
+// Convert me to output `lessProfessions`
+lessProfessions
 ```
 
 ### E2. Push/add a new profession to an array
@@ -433,13 +434,12 @@ console.log(lessProfessions)
   Interactive output of the array of <code>lessProfessions</code>
 </p>
 
-```javascript
-// Convert me to output `professions`
-professions
-```
 ```js
 professions.push("spinster")
 console.log(professions)
+```
+```js
+professions
 ```
 
 ### E3. Loop through an array and log to the console
