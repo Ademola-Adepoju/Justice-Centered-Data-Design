@@ -956,11 +956,16 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
 </p>
 
 ```javascript
-// Your code goes here
-```
+let rtnStatusAndRace = nc2024SampleVoters
+  .map(voter => {
+    if (voter.ballot_rtn_status !== null) {
+      return { ballot_rtn_status: voter.ballot_rtn_status, race: voter.race }
+    }
+    return null
+  })```
 
 ```javascript
-// Your new variable here
+rtnStatusAndRace
 ```
 
 ### E2. Group NC Voters By the Ballot Sent Date as an InternMap()
@@ -976,12 +981,29 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
   Be sure to write your code in a manner aligned with how I break down the process above.
 </p>
 
-```javascript
-// Your code goes here
+```js
+// Import the grouping helper from d3-array 
+import { group } from "d3-array"
+
+// Turn "MM/DD/YYYY" into a real Date in UTC
+function parseMDY(s) {
+  if (!s) return null
+  const [m, d, y] = s.split('/').map(Number)
+  return new Date(Date.UTC(y, m - 1, d))
+}
+
+// 1) Add the new Date field to each voter
+let votersWithSendObj = nc2024SampleVoters.map(v => ({
+  ...v,
+  ballot_send_dt_obj: parseMDY(v.ballot_send_dt)
+}))
+
+// 2) Group by the Date field  
+let bySendDate = group(votersWithSendObj, d => d.ballot_send_dt_obj)
 ```
 
-```javascript
-// Your grouped variable here
+```js
+bySendDate
 ```
 
 ### E3. Group NC Voters By Age Range as an InternMap()
@@ -1000,12 +1022,30 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
   </ol>
 </div>
 
-```javascript
-// Your code goes here
+```js
+import { group } from "d3-array"
+const ageLimits = [30, 40, 50, 60, 70]  // makes: <30, 30–39, 40–49, 50–59, 60–69, 70+
+
+// 2) Turn a numeric age into a label based on the limits above
+function ageBand(age, limits = ageLimits) {
+  for (let i = 0; i < limits.length; i++) {
+    if (age < limits[i]) {
+      if (i === 0) return `<${limits[i]}`
+      const lo = limits[i - 1]
+      const hi = limits[i] - 1
+      return `${lo}–${hi}`
+    }
+  }
+  // 3) If age is at or above the last cutoff, use "70+"
+  return `${limits[limits.length - 1]}+`
+}
+
+// 4) Create the InternMap: key = age band label, value = array of voters in that band
+let groupedByAgeRange = group(nc2024SampleVoters, d => ageBand(d.age))
 ```
 
-```javascript
-// Your grouped variable here
+```js
+groupedByAgeRange
 ```
 
 ### E4. Group NC Voters by Your Desired set of 2-3 Fields as an InternMap()
@@ -1018,12 +1058,19 @@ First outline your procedure with steps below. Then, use the JS codeblock to per
 2. Enter step 2
 3. ...
 
-```javascript
-// Your code goes here
+```js
+import { group } from "d3-array"
+
+let groupedByPartyGenderRace = group(
+  nc2024SampleVoters,
+  d => d.ballot_request_party,  
+  d => d.gender,                
+  d => d.race                   
+)
 ```
 
-```javascript
-// Your grouped variable here
+```js
+groupedByPartyGenderRace
 ```
 
 ### E5. Rollup NC Voters by Total Ballot Sent Date as an InternMap()
@@ -1036,12 +1083,23 @@ First outline your procedure with steps below. Then, use the JS codeblock to per
 2. Enter step 2
 3. ...
 
-```javascript
-// Your code goes here
+```js
+import { rollup } from "d3-array"
+
+let votersWithReqObj = nc2024SampleVoters.map(v => ({
+  ...v,
+  ballot_req_dt_obj: parseMDY(v.ballot_req_dt)
+}))
+// roll up to counts per request date (ignore missing dates)
+let totalByReqDate = rollup(
+  votersWithReqObj.filter(d => d.ballot_req_dt_obj),
+  D => D.length,                       // reducer: count rows in each group
+  d => d.ballot_req_dt_obj             
+)
 ```
 
-```javascript
-// Your grouped variable here
+```js
+totalByReqDate
 ```
 
 ## Submission
