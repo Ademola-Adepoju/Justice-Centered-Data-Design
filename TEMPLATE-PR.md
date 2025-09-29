@@ -2,16 +2,4 @@
 
 ## Triumphs
 
-Reflect on 2-3 triumphs in the list format below.
-
-1. **NameofTriumph**: Describe triumph and what you learned.
-2. **NameofTriumph**: Describe triumph and what you learned.
-3. **NameofTriumph**: Describe triumph and what you learned.
-
-## Questions / Difficulties
-
-Reflect on 2-3 questions about difficulties or concerns in the list format below. Think of questions that you would like your peers to address.
-
-1. **Question_Diff**: Describe difficulty, any lingering questions and concerns, and what you learned by even writing about it so far.
-2. **Question_Diff**: Describe difficulty, any lingering questions and concerns, and what you learned by even writing about it so far.
-3. **Question_Diff**: Describe difficulty, any lingering questions and concerns, and what you learned by even writing about it so far.
+1. **Nolving the * * * * * Breaks**: The * * * * * section breaks wouldn’t disappear with a simple replaceAll. The text had extra spaces/newlines, so my match kept missing. After a bit of research I found that  a small regex (and also tried a split → filter → join approach) to strip any line that was just five asterisks; it worked, and I’m happy I solved it. However, I'm still curious if there’s an even simpler, non-regex way to do the same cleanup. This regex way feels somehow daunting.
