@@ -215,8 +215,32 @@ First, go back to the last chapter and grab the suite of primitives that you cre
 4. Print them all to the console with `console.log()`.
 5. Check your work, as you go, by opening the browser console with the **Inspect Element** tool.
 
-```javascript
-// Write your code in here
+```js
+let meal = "Jollof Rice"
+let side = "Plantain"
+let servings = 3
+let peppers = 1
+let spicy = true
+
+servings += 2
+peppers *= 3
+
+let perPlate = 8
+let totalBites = servings * perPlate
+let friends = 3
+let splitEach = totalBites / friends
+let leftoverBites = totalBites % friends
+
+let plateLabel = meal + " + " + side
+
+let enoughForParty = servings >= 5
+let isCombo = meal == "Jollof Rice" && side == "Plantain"
+let eatNow = spicy || servings > 0
+
+console.log({ meal, side, servings, peppers })
+console.log({ perPlate, totalBites, friends, splitEach, leftoverBites })
+console.log({ plateLabel })
+console.log({ enoughForParty, isCombo, eatNow })
 ```
 
 ## Submission
