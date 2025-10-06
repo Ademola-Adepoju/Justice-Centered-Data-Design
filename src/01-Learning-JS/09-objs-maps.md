@@ -955,12 +955,23 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
   Be sure to write your code in a manner aligned with how I break down the process above.
 </p>
 
-```javascript
-// Your code goes here
+```js
+// trying to get ballot status and race for non-null entries
+let voterStatusAndRace = nc2024SampleVoters.map(
+  (voter) => {
+    // only keep entries that have a status
+    if (voter.ballot_rtn_status != null) {
+      return {
+        ballot_rtn_status: voter.ballot_rtn_status,
+        race: voter.race  
+      }
+    }
+  }
+).filter(item => item != null) // get rid of empty ones
 ```
 
-```javascript
-// Your new variable here
+```js
+voterStatusAndRace
 ```
 
 ### E2. Group NC Voters By the Ballot Sent Date as an InternMap()
@@ -976,12 +987,21 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
   Be sure to write your code in a manner aligned with how I break down the process above.
 </p>
 
-```javascript
-// Your code goes here
+```js
+// first need to add the date objects
+for (const voter of nc2024SampleVoters) {
+  voter.ballot_send_dt_obj = parseDateSlash(voter.ballot_send_dt)
+}
+
+// grouping by the new date field
+let votersByBallotDate = d3.group(
+  nc2024SampleVoters,
+  d => d.ballot_send_dt_obj
+)
 ```
 
-```javascript
-// Your grouped variable here
+```js
+votersByBallotDate 
 ```
 
 ### E3. Group NC Voters By Age Range as an InternMap()
@@ -1001,7 +1021,7 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
 </div>
 
 ```javascript
-// Your code goes here
+// your code goes here
 ```
 
 ```javascript
@@ -1014,16 +1034,20 @@ nc24VotersRollUpPartyAndRace.get("DEM").get("F") // Yields 4149
 
 First outline your procedure with steps below. Then, use the JS codeblock to perform your grouping as a D3.js `InternMap()`.
 
-1. Enter step 1
-2. Enter step 2
-3. ...
+1. Choose 2 fields to group by (I'm using county_desc and ballot_request_party)
+2. Use d3.group() to create nested groupings of these fields
 
-```javascript
-// Your code goes here
+```js
+// group by county and party 
+let votersByCountyAndParty = d3.group(
+  nc2024SampleVoters,
+  d => d.county_desc,
+  d => d.ballot_request_party
+)
 ```
 
-```javascript
-// Your grouped variable here
+```js
+votersByCountyAndParty
 ```
 
 ### E5. Rollup NC Voters by Total Ballot Sent Date as an InternMap()
@@ -1032,16 +1056,26 @@ First outline your procedure with steps below. Then, use the JS codeblock to per
 
 First outline your procedure with steps below. Then, use the JS codeblock to perform your rollup as a D3.js `InternMap()`.
 
-1. Enter step 1
-2. Enter step 2
-3. ...
+1. Need to add a date field for ballot request dates for each voter.
+2. I'll convert the string dates to actual date objects using pasrseDateSlash.
+3. Then, I'll use d3.rollup to count total voters for each request date.
 
-```javascript
-// Your code goes here
+```js
+// first add Date objects for ballot request dates
+for (const voter of nc2024SampleVoters) {
+  voter.ballot_req_dt_obj = parseDateSlash(voter.ballot_req_dt)
+}
+
+// use d3.rollup to count voters per request date
+let voterCountByDate = d3.rollup(
+  nc2024SampleVoters,
+  group => group.length, // count voters in each group
+  d => d.ballot_req_dt_obj // group by request date
+)
 ```
 
-```javascript
-// Your grouped variable here
+```js
+voterCountByDate
 ```
 
 ## Submission
