@@ -1058,7 +1058,7 @@ First outline your procedure with steps below. Then, use the JS codeblock to per
 
 1. Need to add a date field for ballot request dates for each voter
 2. I'll convert the string dates to actual date objects using pasrseDateSlash
-3. Then, I'll d3.rollup to count total voters for each request date
+3. Then, I'll use d3.rollup to count total voters for each request date
 
 ```js
 // first add Date objects for ballot request dates
