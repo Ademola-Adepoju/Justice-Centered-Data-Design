@@ -3,8 +3,9 @@
 <!-- IMPORT YOUR MODULES -->
 ```js
 import {utcParse,utcFormat} from "d3-time-format";
+import {format} from "d3-format";
 // Import your custom modules here: getUniquePropListBy, oneLevelRollUpFlatMap, twoLevelRollUpFlatMap, threeLevelRollUpFlatMap, sumUpWithReducerTests
-import {getUniquePropListBy} from "./utils/utils.js";
+import {getUniquePropListBy, mapDateObject, oneLevelRollUpFlatMap, twoLevelRollUpFlatMap, threeLevelRollUpFlatMap} from "./utils/utils.js";
 ```
 
 ## Start Your GH Workflow
@@ -101,15 +102,15 @@ Let's attach and render the dataset CSV file called `nc_absentee_mail_2024_no_dr
 
 Let's assign the attached data to a constant variable called `ncVotersAll`.
 
-```javascript
-// Attach with this codeblock
+```js
+const ncVotersAll = FileAttachment("../data/nc-voters/nc_absentee_mail_2024_no_dropped_dupes.csv").csv()
 ```
 
 <p class="codeblock-caption">
   Output of full dataset
 </p>
 
-```javascript
+```js
 ncVotersAll
 ```
 
@@ -222,9 +223,9 @@ Import the `mapDateObject` function in the `import` statement at the top of this
   Console logs are your friend for testing your code! Just be sure to erase them, when you don't need them anymore.
 </p>
 
-```javascript
+```js
 // Convert so you can test your imported function as you develop it
-const ncVotersAllUpdated = mapDateObject(ncVotersAll, "ENTER THE DATEFIELD HERE")
+const ncVotersAllUpdated = mapDateObject(ncVotersAll, "ballot_req_dt")
 ```
 
 Ok, now convert the below codeblock to an exectuable one, so you can view the output.
@@ -233,8 +234,7 @@ Ok, now convert the below codeblock to an exectuable one, so you can view the ou
   Interactive output of <code>ncVotersAllUpdated</code> with new date properties:
 </p>
 
-```javascript
-// Convert to output
+```js
 ncVotersAllUpdated
 ```
 
@@ -262,19 +262,25 @@ The output should resemble something like the example image below:
 
 Now use your `threeLevelRollUpFlatMap()` here.
 
-```javascript
+```js
 /**
  * Convert and use `threeLevelRollUpFlatMap()`
  * and assign to a const `afByWeekRaceStatus`.
 **/
-
+const afByWeekRaceStatus = threeLevelRollUpFlatMap(
+  ncVotersAllUpdated,
+  "ballot_req_dt_week",
+  "race",
+  "ballot_rtn_status",
+  "af"
+  );
 ```
 
 <p class="codeblock-caption">
   Interactive output of ballot's per week:
 </p>
 
-```javascript
+```js
 // Convert to output afByWeekRaceStatus
 afByWeekRaceStatus
 ```
@@ -294,22 +300,35 @@ The result should resemble the following output:
 ### 4.1 Write your reducer functions
 
 <!-- Reducer Functions -->
-```javascript
+```js
 /**
  * Write a reducer function that checks to make sure
  * ballot_rtn_status is NOT null and starts with "ACCEPTED"
  *    If true, return the 'af' value for the object
  *    If false, return 0
 **/
+const acceptedReducer = (d) => {
+  if (d.ballot_rtn_status != null && d.ballot_rtn_status.startsWith("ACCEPTED")) {
+    return d.af
+  } else {
+    return 0
+  }
+}
 
 // Now, do the same for what will become "REJECTED" statuses
-
+const rejectedReducer = (d) => {
+  if (d.ballot_rtn_status != null && !d.ballot_rtn_status.startsWith("ACCEPTED")) {
+    return d.af
+  } else {
+    return 0
+  }
+}
 ```
 
 ### 4.2 Write your reducer properties and objectify your reducer functions
 
 <!-- Reducer Properties & Objectify reducerFuncs -->
-```javascript
+```js
 const reducerProps = [
   // Let's reduce the data to these two values for race
   "WHITE", "BLACK or AFRICAN AMERICAN"
@@ -318,11 +337,11 @@ const reducerProps = [
 const reducerFuncs = [
   {
     type: "ACCEPTED",
-    func:  // ENTER FUNCTION TO EVAL AS "ACCEPTED"
+    func: acceptedReducer  // ENTER FUNCTION TO EVAL AS "ACCEPTED" 
   },
   {
     type: "REJECTED",
-    func:  // ENTER FUNCTION TO EVAL AS "REJECTED"
+    func: rejectedReducer  // ENTER FUNCTION TO EVAL AS "REJECTED"
   },
 ]
 
@@ -347,7 +366,7 @@ Instead of creating a generalizable function for all three-level cases, some tim
 Convert the below codeblock and develop it further in this notebook to complete the task. We're not creating a module, because sometimes the complexity of the situation just demands using simpler methods to meet the situation. Indeed, there's nothing wrong with using the helpful set of for loops and conditions to get the job done. `:-)`
 
 <!-- Counting it all up through a series of custom loops -->
-```javascript
+```js
 // 1. Create array for tallied frequency results
 const afGroupedPercResults = []
 
@@ -361,11 +380,11 @@ for (const weekNumber of uniqueListOfWeekNumbers) {
 
   // 3. Loop through testor functions with your custom conditions
   //    - Use `for...in` so we can loop as many tests as provided
-  for () {
+  for (const rFunc in reducerFuncs) {
 
     // 4. Loop through interested properties
     //    - Use `for...in` so we can loop as many tests as provided
-    for () {
+    for (const rProperty in reducerProps) {
 
       /**
        * 3. Calculate the sum grand total
@@ -380,6 +399,16 @@ for (const weekNumber of uniqueListOfWeekNumbers) {
        *    for `ballot_rtn_status`
       **/
       const weekRaceAF = d3.sum(
+        afByWeekRaceStatus,
+        (d) => {
+          if (d.ballot_req_dt_week === weekNumber && 
+              d.race === reducerProps[rProperty] &&
+              d.ballot_rtn_status != null) {
+            return d.af
+          } else {
+            return 0
+          }
+        }
         // Replace me with the iterable: `afByWeekRaceStatus`
         // Replace me with your accessor function here
 
@@ -393,6 +422,15 @@ for (const weekNumber of uniqueListOfWeekNumbers) {
        *    3. REDUCER FUNCTION return value.
       **/
       const summedUpLevel = d3.sum(
+        afByWeekRaceStatus,
+        (d) => {
+          if (d.ballot_req_dt_week === weekNumber && 
+              d.race === reducerProps[rProperty]) {
+            return reducerFuncs[rFunc].func(d)
+          } else {
+            return 0
+          }
+        }
         // Replace me with the `afByWeekRaceStatus` data
         /**
          * Replace me with your accessor function.
@@ -417,17 +455,17 @@ for (const weekNumber of uniqueListOfWeekNumbers) {
       **/
       afGroupedPercResults.push({
         // Add the current week
-        ballot_req_dt_week: ,
+        ballot_req_dt_week: weekNumber ,
         // Add the current reducer property here
         race: reducerProps[rProperty],
         // Add the current reducer function "type"
-        ballot_rtn_status: ,
+        ballot_rtn_status: reducerFuncs[rFunc].type,
         // Add the AF value for the week here
-        af: ,
+        af: summedUpLevel,
         // Calculate the percentage with:
         // the total for the grouped level (summedUpLevel)
         // divided by the total for the entire week (weekRaceAF)
-        percentage: ,
+        percentage: summedUpLevel / weekRaceAF ,
       })
 
     }
@@ -439,7 +477,7 @@ for (const weekNumber of uniqueListOfWeekNumbers) {
   Output of afGroupedPercResults.
 </p>
 
-```javascript
+```js
 afGroupedPercResults
 ```
 
@@ -454,27 +492,32 @@ Tabulate the data here. Use `Inputs.table()`'s `format` option to express the pe
   You can then use <code>Inputs.table()</code>'s <code>format: { object_key: (x) => //use `x` in an accessor here, // Add more ... }</code> to express data appropriately. (Reference Observable Framework's <a href="https://observablehq.com/framework/inputs/table#inputs-3a86ea-4" target="_blank" rel="noreferrer noopenner">example in their docs</a>)
 </p>
 
-```javascript
+```js
 // Convert and tabulate afGroupedPercResults here
+Inputs.table(afGroupedPercResults, {
+  format: {
+    percentage: (x) => format(".2%")(x)
+  }
+})
 ```
 
 ## Question: Why not percentage of all ballots per week?
 
 Why did I direct you to sum the total for the week > race group, rather than calculate the percentage based on the grand sum total for the entire week across all included races? How are those percentages' respective *interpretive levels* different?
 
-YOUR_RESPONSE_HERE
+**Response**: Because we want to compare rejection rates within each racial group, not across all groups mixed together. If we calculated the percentage based on all ballots that week (all races combined, that is), the huge number of White voters would make the percentages misleading. We wouldn't be able to see if Black voters are experiencing higher rejection rates compared to White voters.
 
 ## Question: New insights?
 
 After tabulating the data, as well as sorting and reviewing it, what new angles and questions come to mind?
 
-YOUR_RESPONSE_HERE
+**Response**: I might be interested in if the data can reflect by how much a certain race have more "0" ballot counts against the other. If this can reveal any underlying systemic injustice going on. Where I'm from (Nigeria), the average Nigerian who sees that kind of data automatically assumes election rigging. In the US where elections are much more free and fair, I would like to know what those counts could possibly reveal about the electoral process.
 
 ## Question: Difficulties?
 
 After tabulating the data, as well as sorting and reviewing it, what difficulties are you experiencing as you review so much data in a table?
 
-YOUR_RESPONSE_HERE
+**Response**: The biggest difficulty is that tables with this much data are really hard to read and understand. I am struggling to immediately find patterns. T
 
 ## Conclusion
 

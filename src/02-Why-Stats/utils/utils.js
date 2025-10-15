@@ -14,6 +14,7 @@ import {utcParse,utcFormat} from "d3-time-format";
 
 // Add Your Date Parsers & Formatters Below
 
+const parseDate = utcParse("%m/%d/%Y");
 
 // Complete this codeblock code from Chapter E-2.2, exercise 2 below
 export const mapDateObject = (data, dateString) => {
@@ -24,6 +25,7 @@ export const mapDateObject = (data, dateString) => {
     // 2. Create dynamic keys to use for new properties
     const objField = dateString+"_obj"
     const weekField = dateString+"_week"
+    const monthField = dateString+"_month"
 
     // 3. Skip any null request dates
     if (ballot[dateString] != null) {
@@ -32,7 +34,17 @@ export const mapDateObject = (data, dateString) => {
        *    property for each `ballot`
        *    called `objField`.
       **/
-     ballot[objField] = parseDate(ballot[dateField])
+     ballot[objField] = parseDate(ballot[dateString])
+     // Adding week number
+     const dateObj = ballot[objField]
+     const weekString = utcFormat("%W")(dateObj)
+     const weekNumber = Number(weekString)
+     ballot[weekField] = weekNumber
+
+     // Adding month number
+     const monthString = utcFormat("%m")(dateObj)
+     const monthNumber = Number(monthString)
+     ballot[monthField] = monthNumber
     }
     return ballot
   })
@@ -235,3 +247,52 @@ export const sumUpWithReducerTests = (reducerFunctions, reducerProperties, data,
  *     third level.
 **/
 
+export const threeLevelRollUpFlatMap = (data, level1Key, level2Key, level3Key, countKey) => {
+
+  // 1. Rollups on 3 nested levels
+  const colTotals = rollups(
+    data,
+    (v) => v.length,
+    (d) => d[level1Key],
+    (d) => d[level2Key],
+    (d) => d[level3Key]
+  )
+
+  // 2. Flatten 1st grouped level back to array of objects
+  const flatTotals = colTotals.flatMap((l1Elem) => {
+
+    // 2.1 Assign level 1 key
+    let l1KeyValue = l1Elem[0]
+
+    // 2.2 Flatten 2nd grouped level
+    const flatLevels = l1Elem[1].flatMap((l2Elem) => {
+
+      // 2.2.1 Assign level 2 key
+      let l2KeyValue = l2Elem[0]
+
+      // 2.2.2 Flatten 3rd grouped level
+      const flatLevel3 = l2Elem[1].map((l3Elem) => {
+
+        // Assign level 3 key
+        let l3KeyValue = l3Elem[0]
+
+        // 2.2.2.1 Return object with all 3 levels
+        return {
+          [level1Key]: l1KeyValue,
+          [level2Key]: l2KeyValue,
+          [level3Key]: l3KeyValue,
+          [countKey]: l3Elem[1]
+        }
+      })
+
+      // 2.2.3 Return from level 2
+      return flatLevel3
+    })
+
+    // 2.3 Return from level 1
+    return flatLevels
+  })
+
+  // 3. Return the final flattened array
+  return flatTotals
+}
