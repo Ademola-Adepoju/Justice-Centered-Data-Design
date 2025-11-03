@@ -94,8 +94,12 @@ export default {
           path: "/02-Why-Stats/04-freq-dist-plot"
         },
         {
-          name: "2.5 Central Tendency & Variability",
+          name: "2.5 Central Tendency",
           path: "/02-Why-Stats/05-central-tend"
+        },
+        {
+          name: "2.6 Variability",
+          path: "/02-Why-Stats/06-dispersion"
         },
         // {
         //   name: "2.5 Central Tendency & Variability",
