@@ -87,7 +87,11 @@ let lettersByYear = Array.from(
 ``` -->
 
 
+## 1. Term Frequency
 
+The term frequency is the simple sum total number of times a given `t` term appears in `d` document.
+
+> The term frequency for term ${tex`t(i)`} in document ${tex`d(j)`} is:
 >
 > ${tex`TF(i,j) = \text{the number of occurrences of term}\ t(i) \text{in document}\ d(j)`}
 
@@ -106,6 +110,24 @@ import * as tfidf from "tiny-tfidf";
 ```
 
 ### 1.1 How to use the Corpus class constructor
+
+When you use `Corpus`, it has been designed to expect the following parameters:
+
+1. **Array of identifiers (IDs) for the documents**. Should be unique values (Any data type) per row and be in parallel order as the next parameter for the documents.
+2. **Array of Strings of the documents themselves, i.e., the data**. Should be in parallel sequence with the prior parameter of document IDs. In this case, each item in the Array is String data of letters written by the historian, Dr. Heather Cox Richardson.
+3. **Use default stopwords?**: Boolean. (Optional.) Defaults to `true`.
+4. **Custom stopwords** (Optional): Add an Array of Strings.
+5. **K1**: (Optional). Tuning parameter. Default = `2.0`.
+    - `K1` modifies term frequency (higher values increase their influence)
+6. **b**: (Optional). Tuning parameter. Default = `0.75`.
+    - `b` modifies document length (between 0 and 1).
+      - 1 means that long documents are repetitive
+      - 0 means they are multitopic
+
+```js
+// TF tuner
+const k1 = 2.0
+// Document length tuner
 const b = 0.75
 ```
 
@@ -113,6 +135,42 @@ const b = 0.75
 ```javascript
 let corpus = new tfidf.Corpus(
   // Array of document names
+  letterTitles,
+  // Array of documents
+  letterDocs,
+  // Boolean to use stop words or not
+  true,
+  // Additional custom stop as an Array of Strings
+  customStopwords,
+  // TF tuning constant
+  k1,
+  // Doc tuning constant
+  b,
+)
+```
+
+<!-- Create document title array & document array for Corpus constructor -->
+```js
+let customStopwords = [
+  "ar", "are", "aren", "arent", "aren't", "as", "at", "also",
+  "the", "to",
+  "https", "www", "com", "html", "gov", "org", "share",
+]
+let letterTitles = filteredPerLetter.map((l) => {return l.dateObject})
+let letterDocs = filteredPerLetter.map((l) => {return l.letter.toLowerCase()})
+```
+
+<!-- Create corpus class object -->
+```js
+let corpus = new tfidf.Corpus(
+  // 1. Array of document names
+  letterTitles,
+  // 2. Array of documents
+  letterDocs,
+  // 3. Boolean to use stop words or not
+  true,
+  // 3. Additional custom stop as an Array of Strings
+  customStopwords,
   // 4. TF tuning constant
   k1,
   // 5. Doc tuning constant
