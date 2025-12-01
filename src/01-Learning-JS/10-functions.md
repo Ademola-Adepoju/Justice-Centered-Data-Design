@@ -93,8 +93,14 @@ Overall keep that rule-of-thumb in mind as you practice writing functions.
 Use D3.js `FileAttachment()` method below in VS Code. Remember that you'll need to write a relative path as a String parameter that helps the computer find where the CSV file is in relation to this particular page's file in the project tree.
 
 <!-- Attach sampled NC voter data -->
-```javascript
+```js
 // Convert to `js` codeblock and attach sampled NC voter data file: nc_absentee_mail_2024_n20000.csv
+// Convert to js codeblock and attach sampled NC voter data file 
+const ncVoters = FileAttachment("../data/nc-voters/nc_absentee_mail_2024_n20000.csv").csv()
+```
+```js
+// I want to check the first 5 rows of data to verify it loaded correctly
+ncVoters.slice(0,5)
 ```
 
 ## E2. Convert String dates to Date() objects
@@ -103,26 +109,45 @@ Use D3.js `FileAttachment()` method below in VS Code. Remember that you'll need 
 
 First outline your procedure with steps below.
 
-1. Enter step 1
-2. Enter step 2
-3. ...
+1. I'll use d3.utcParse() to create a date parser for the format "MM/DD/YYYY"
+2. tHEN, i'LL USE .map() to loop through each voter object
+3. Convert the string dates to Date objects
+4. Finally, I'll returned the changed data
 
 Now, code!
 
-```javascript
-// Your function code goes here
+```js
+// Your function code goes here (this function converts the dates)
+const convertDates = (voterData) => {
+  // First make the date parser
+  let dateMaker = d3.utcParse("%m/%d/%y")
+  
+  // Going through each voter one by one
+  let newVoterData = voterData.map(function(voter) {
+    // Make new date fields for each date
+    voter.requestDate = dateMaker(voter.ballot_req_dt)
+    voter.sendDate = dateMaker(voter.ballot_send_dt) 
+    voter.returnDate = dateMaker(voter.ballot_rtn_dt)
+    
+    return voter
+  })
+  
+  return newVoterData
+}
 ```
 
-```javascript
+```js
 // Your use of the function code goes here
+let votersWithDates = convertDates(ncVoters)
 ```
 
 <p class="codeblock-caption">
   E1 Interactive Output
 </p>
 
-```javascript
+```js
 // Convert and output variable here
+votersWithDates
 ```
 
 ## E3. Create Your Own Function (with Conditions)!
@@ -131,26 +156,54 @@ Now, code!
 
 First outline your procedure with steps below.
 
-1. Enter step 1
-2. Enter step 2
-3. ...
+1. I'll create a function that counts voters by race
+2. To check each voter's race, I'll use if/else condition statements. 
+3. I'll add up the counts from the lists and show the total counts.
 
 Now, code!
 
-```javascript
-// Your function code goes here
+```js
+// Making a function to count voters by race
+const countVotersByRace = (voterData) => {
+  let whiteVoters = 0
+  let blackVoters = 0
+  let otherVoters = 0
+  
+  // Looking through voters one at a time
+  voterData.forEach(voter => {
+    // this is to check their race and count them
+    if (voter.race === "WHITE") {
+      whiteVoters = whiteVoters + 1
+    } else if (voter.race === "BLACK or AFRICAN AMERICAN") {
+      blackVoters = blackVoters + 1
+    } else {
+      otherVoters = otherVoters + 1
+    }
+  })
+  
+  // Putting the counts in an easy to read format
+  let raceCounts = {
+    White: whiteVoters,
+    Black: blackVoters,
+    Other: otherVoters
+  }
+  
+  return raceCounts
+}
 ```
 
-```javascript
+```js
 // Your use of the function code goes here
+let raceResults = countVotersByRace(ncVoters)
 ```
 
 <p class="codeblock-caption">
   E2 Interactive Output
 </p>
 
-```javascript
+```js
 // Your output variable here
+raceResults
 ```
 
 ## Submission
